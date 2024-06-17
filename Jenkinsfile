@@ -134,10 +134,11 @@ pipeline {
                 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
                 \$storageUrl = '${blobUrl}'
                 \$destinationPath = 'D:\\dotnetapp\\${APPLICATION_ZIP}'
+                if (Test-Path \$destinationPath) { Remove-Item \$destinationPath -Force }
                 Write-Output "Downloading file from \$storageUrl to \$destinationPath"
                 Invoke-WebRequest -Uri \$storageUrl -OutFile \$destinationPath
                 Write-Output "Extracting files to D:\\dotnetapp"
-                Expand-Archive -Path \$destinationPath -DestinationPath 'D:\\dotnetapp'
+                Expand-Archive -Path \$destinationPath -DestinationPath 'D:\\dotnetapp' -Force
                 Write-Output "Deployment completed."
             """
 
