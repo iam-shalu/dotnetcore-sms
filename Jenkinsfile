@@ -119,9 +119,9 @@ pipeline {
             // Construct PowerShell script with proper termination
             def powershellScript = """
                 \$storageUrl = "${blobUrl}"
-                \$destinationPath = "D:\\dotnetapp\\${APPLICATION_ZIP}"
+                \$destinationPath = "c:\\dotnetapp\\${APPLICATION_ZIP}"
                 Invoke-WebRequest -Uri \$storageUrl -OutFile \$destinationPath
-                Expand-Archive -Path \$destinationPath -DestinationPath "D:\\dotnetapp"
+                Expand-Archive -Path \$destinationPath -DestinationPath "c:\\dotnetapp"
                 # Add any other deployment commands here, e.g., starting services, configuring the application, etc.
             """
 
