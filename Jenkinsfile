@@ -53,7 +53,7 @@ pipeline {
                     bat "dotnet publish --no-restore --configuration Release --output .\\publish"
 
                     // Compress the published output into a zip file
-                    bat "powershell Compress-Archive -Path .\\publish\\* -DestinationPath .\\${APPLICATION_ZIP}"
+                    bat "powershell Compress-Archive -Path .\\publish\\* -DestinationPath .\\${APPLICATION_ZIP} -Force"
                 }
             }
         }
