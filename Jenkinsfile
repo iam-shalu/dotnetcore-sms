@@ -78,17 +78,17 @@ pipeline {
         }
 
         stage('Generate SAS Token') {
-            steps {
-                script {
-                    // Generate SAS token for the uploaded blob
-                    def expiryDate = new Date() + 1 // Expiry date 1 day from now
-                    def expiryFormatted = expiryDate.format("yyyy-MM-dd'T'HH:mm:ss'Z'") // Format the expiry date
-                    def sasTokenCommand = "az storage blob generate-sas --account-name %AZURE_STORAGE_ACCOUNT% --account-key %AZURE_STORAGE_KEY% --container-name %AZURE_CONTAINER_NAME% --name %APPLICATION_ZIP% --permissions r --expiry ${expiryFormatted} -o tsv"
-                    def sasToken = bat(script: sasTokenCommand, returnStdout: true).trim()
-                    env.SAS_TOKEN = sasToken
-                }
-            }
+    steps {
+        script {
+            // Generate SAS token for the uploaded blob
+            def expiryDate = new Date() + 1 // Expiry date 1 day from now
+            def expiryFormatted = expiryDate.format("yyyy-MM-dd'T'HH:mm:ss'Z'") // Format the expiry date
+            def sasTokenCommand = "az storage blob generate-sas --account-name %AZURE_STORAGE_ACCOUNT% --account-key %AZURE_STORAGE_KEY% --container-name %AZURE_CONTAINER_NAME% --name %APPLICATION_ZIP% --permissions r --expiry ${expiryFormatted} -o tsv"
+            def sasToken = bat(script: sasTokenCommand, returnStdout: true).trim()
+            env.SAS_TOKEN = sasToken
         }
+    }
+}
 
         //stage('Deploy to Azure VM') {
         //    steps {
@@ -114,9 +114,9 @@ pipeline {
     steps {
         script {
             // Construct URL with SAS token
-            def blobUrl1 = "https://${AZURE_STORAGE_ACCOUNT}.blob.core.windows.net/${AZURE_CONTAINER_NAME}/${APPLICATION_ZIP}?${env.SAS_TOKEN}"
-            echo "Blob URL: ${blobUrl1}"
-            def blobUrl = "https://stdotnetapp.blob.core.windows.net/condotnetapp/dotnetcore-sms.zip"
+            def blobUrl = "https://${AZURE_STORAGE_ACCOUNT}.blob.core.windows.net/${AZURE_CONTAINER_NAME}/${APPLICATION_ZIP}?${env.SAS_TOKEN}"
+            echo "Blob URL: ${blobUrl}"
+            
             // Construct PowerShell script with proper termination
             def powershellScript = """
                 \$storageUrl = "${blobUrl}"
@@ -130,7 +130,7 @@ pipeline {
 
             // Run PowerShell script on the VM
             bat """
-                az vm run-command invoke -g %AZURE_RESOURCE_GROUP% -n %AZURE_VM_NAME% --command-id RunPowerShellScript --scripts "${powershellScript}"
+                az vm run-command invoke -g %AZURE_RESOURCE_GROUP% -n %AZURE_VM_NAME% --command-id RunPowerShellScript --scripts '${powershellScript}'
             """
         }
     }
