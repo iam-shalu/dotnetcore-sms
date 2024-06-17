@@ -136,7 +136,7 @@ pipeline {
                 \$destinationPath = 'D:\\dotnetapp\\${APPLICATION_ZIP}'
                 Write-Output "Downloading file from \$storageUrl to \$destinationPath"
                 Invoke-WebRequest -Uri \$storageUrl -OutFile \$destinationPath
-                Write-Output "Extracting files to C:\\dotnetapp"
+                Write-Output "Extracting files to D:\\dotnetapp"
                 Expand-Archive -Path \$destinationPath -DestinationPath 'D:\\dotnetapp'
                 Write-Output "Deployment completed."
             """
