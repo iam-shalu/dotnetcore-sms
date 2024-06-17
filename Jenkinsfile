@@ -77,16 +77,24 @@ pipeline {
             }
         }
 
+        stage('Generate SAS Token') {
+            steps {
+                script {
+                    // Generate SAS token for the uploaded blob
+                    def expiryDate = new Date() + 1 // Expiry date 1 day from now
+                    def expiryFormatted = expiryDate.format("yyyy-MM-dd'T'HH:mm:ss'Z'") // Format the expiry date
+                    def sasTokenCommand = "az storage blob generate-sas --account-name %AZURE_STORAGE_ACCOUNT% --account-key %AZURE_STORAGE_KEY% --container-name %AZURE_CONTAINER_NAME% --name %APPLICATION_ZIP% --permissions r --expiry ${expiryFormatted} -o tsv"
+                    def sasToken = bat(script: sasTokenCommand, returnStdout: true).trim()
+                    env.SAS_TOKEN = sasToken
+                }
+            }
+        }
+
         stage('Deploy to Azure VM') {
             steps {
                 script {
-                    // Generate a SAS token for the storage blob
-                    def sasToken = bat(script: """
-                        az storage blob generate-sas --account-name %AZURE_STORAGE_ACCOUNT% --account-key %AZURE_STORAGE_KEY% --container-name %AZURE_CONTAINER_NAME% --name %APPLICATION_ZIP% --permissions r --expiry `date -u -d "1 hour" '+%Y-%m-%dT%H:%MZ'` -o tsv
-                    """, returnStdout: true).trim()
-
-                    // Construct the full URL to the application package
-                    def blobUrl = "https://${AZURE_STORAGE_ACCOUNT}.blob.core.windows.net/${AZURE_CONTAINER_NAME}/${APPLICATION_ZIP}?${sasToken}"
+                    // Construct URL with SAS token
+                    def blobUrl = "https://${AZURE_STORAGE_ACCOUNT}.blob.core.windows.net/${AZURE_CONTAINER_NAME}/${APPLICATION_ZIP}?${env.SAS_TOKEN}"
 
                     // Use Azure CLI to run commands on the VM to download and deploy the application
                     bat """
