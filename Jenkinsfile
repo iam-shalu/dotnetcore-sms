@@ -3,19 +3,19 @@ pipeline {
 
     environment {
         DOTNET_CLI_HOME = "C:\\Program Files\\dotnet"
-        AZURE_SUBSCRIPTION_ID = '<your-subscription-id>'
-        AZURE_CLIENT_ID = '<your-client-id>'
-        AZURE_CLIENT_SECRET = '<your-client-secret>'
-        AZURE_TENANT_ID = '<your-tenant-id>'
-        AZURE_RESOURCE_GROUP = '<your-resource-group>'
-        AZURE_VM_NAME = '<your-vm-name>'
-        AZURE_VM_IP = '<your-vm-ip>'
-        AZURE_VM_USER = '<your-vm-username>'
-        AZURE_VM_PASSWORD = credentials('your-vm-password-id')  // Store the VM password in Jenkins credentials
-        AZURE_STORAGE_ACCOUNT = '<your-storage-account>'
-        AZURE_STORAGE_KEY = credentials('your-storage-key-id')  // Store the storage key in Jenkins credentials
-        AZURE_CONTAINER_NAME = '<your-container-name>'
-        APPLICATION_ZIP = 'application.zip'
+        AZURE_SUBSCRIPTION_ID = credentials('subscription-id')
+        AZURE_CLIENT_ID = credentials('client-id')
+        AZURE_CLIENT_SECRET = credentials('client-secret')
+        AZURE_TENANT_ID = credentials('tenant-id')
+        AZURE_RESOURCE_GROUP = 'dotnetapp'
+        AZURE_VM_NAME = 'vmdotnetapp'
+        AZURE_VM_IP = '13.71.99.138'
+        AZURE_VM_USER = 'dotnetadmin'
+        AZURE_VM_PASSWORD = credentials('vmpassword-id')  // Store the VM password in Jenkins credentials
+        AZURE_STORAGE_ACCOUNT = 'stdotnetapp'
+        AZURE_STORAGE_KEY = credentials('storage-key-id')  // Store the storage key in Jenkins credentials
+        AZURE_CONTAINER_NAME = 'condotnetapp'
+        APPLICATION_ZIP = 'dotnetcore-sms.zip'
     }
 
     stages {
@@ -92,9 +92,9 @@ pipeline {
                     bat """
                         az vm run-command invoke -g %AZURE_RESOURCE_GROUP% -n %AZURE_VM_NAME% --command-id RunPowerShellScript --scripts @'
                         \$storageUrl = "${blobUrl}"
-                        \$destinationPath = "C:\\path\\to\\destination\\${APPLICATION_ZIP}"
+                        \$destinationPath = "D:\\dotnetapp\\${APPLICATION_ZIP}"
                         Invoke-WebRequest -Uri \$storageUrl -OutFile \$destinationPath
-                        Expand-Archive -Path \$destinationPath -DestinationPath "C:\\path\\to\\destination"
+                        Expand-Archive -Path \$destinationPath -DestinationPath "D:\\dotnetapp"
                         # Add any other deployment commands here, e.g., starting services, configuring the application, etc.
                         '@
                     """
