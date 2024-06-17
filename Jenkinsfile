@@ -114,8 +114,8 @@ pipeline {
     steps {
         script {
             // Construct URL with SAS token
-            def blobUrl = "https://${AZURE_STORAGE_ACCOUNT}.blob.core.windows.net/${AZURE_CONTAINER_NAME}/${APPLICATION_ZIP}?${env.SAS_TOKEN}"
-
+            //def blobUrl = "https://${AZURE_STORAGE_ACCOUNT}.blob.core.windows.net/${AZURE_CONTAINER_NAME}/${APPLICATION_ZIP}?${env.SAS_TOKEN}"
+            def blobUrl = "https://stdotnetapp.blob.core.windows.net/condotnetapp/dotnetcore-sms.zip"
             // Construct PowerShell script with proper termination
             def powershellScript = """
                 \$storageUrl = "${blobUrl}"
