@@ -131,12 +131,13 @@ pipeline {
             
             // Construct PowerShell script with proper escaping
             def powershellScript = """
+                [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
                 \$storageUrl = '${blobUrl}'
-                \$destinationPath = 'c:\\dotnetapp\\${APPLICATION_ZIP}'
+                \$destinationPath = 'C:\\dotnetapp\\${APPLICATION_ZIP}'
                 Write-Output "Downloading file from \$storageUrl to \$destinationPath"
                 Invoke-WebRequest -Uri \$storageUrl -OutFile \$destinationPath
-                Write-Output "Extracting files to c:\\dotnetapp"
-                Expand-Archive -Path \$destinationPath -DestinationPath 'D:\\dotnetapp'
+                Write-Output "Extracting files to C:\\dotnetapp"
+                Expand-Archive -Path \$destinationPath -DestinationPath 'C:\\dotnetapp'
                 Write-Output "Deployment completed."
             """
 
@@ -150,6 +151,7 @@ pipeline {
         }
     }
 }
+
 
 
 
