@@ -121,7 +121,7 @@ pipeline {
         //    }
         //}
 
-        stage('Deploy to Azure VM') {
+    stage('Deploy to Azure VM') {
     steps {
         script {
             // Construct URL with SAS token
@@ -131,22 +131,26 @@ pipeline {
             
             // Construct PowerShell script with proper escaping
             def powershellScript = """
-                \$storageUrl = "${blobUrl}"
-                \$destinationPath = "D:\\dotnetapp\\${APPLICATION_ZIP}"
-                Write-Output \"Downloading file from \$storageUrl to \$destinationPath\"
+                \$storageUrl = '${blobUrl}'
+                \$destinationPath = 'D:\\dotnetapp\\${APPLICATION_ZIP}'
+                Write-Output "Downloading file from \$storageUrl to \$destinationPath"
                 Invoke-WebRequest -Uri \$storageUrl -OutFile \$destinationPath
-                Write-Output \"Extracting files to D:\\dotnetapp\"
-                Expand-Archive -Path \$destinationPath -DestinationPath \"D:\\dotnetapp\"
-                Write-Output \"Deployment completed.\"
+                Write-Output "Extracting files to D:\\dotnetapp"
+                Expand-Archive -Path \$destinationPath -DestinationPath 'D:\\dotnetapp'
+                Write-Output "Deployment completed."
             """
+
+            // Save the PowerShell script to a file
+            writeFile file: 'deploy.ps1', text: powershellScript
 
             // Run PowerShell script on the VM
             bat """
-                az vm run-command invoke -g %AZURE_RESOURCE_GROUP% -n %AZURE_VM_NAME% --command-id RunPowerShellScript --scripts '${powershellScript}'
+                az vm run-command invoke -g ${AZURE_RESOURCE_GROUP} -n ${AZURE_VM_NAME} --command-id RunPowerShellScript --scripts @deploy.ps1
             """
         }
     }
 }
+
 
 
 
