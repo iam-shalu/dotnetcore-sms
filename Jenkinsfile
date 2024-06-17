@@ -83,12 +83,13 @@ pipeline {
             // Generate SAS token for the uploaded blob
             def expiryDate = new Date() + 1 // Expiry date 1 day from now
             def expiryFormatted = expiryDate.format("yyyy-MM-dd'T'HH:mm:ss'Z'") // Format the expiry date
-            def sasTokenCommand = "az storage blob generate-sas --account-name %AZURE_STORAGE_ACCOUNT% --account-key %AZURE_STORAGE_KEY% --container-name %AZURE_CONTAINER_NAME% --name %APPLICATION_ZIP% --permissions r --expiry ${expiryFormatted} -o tsv"
+            def sasTokenCommand = "az storage blob generate-sas --account-name ${AZURE_STORAGE_ACCOUNT} --account-key ${AZURE_STORAGE_KEY} --container-name ${AZURE_CONTAINER_NAME} --name ${APPLICATION_ZIP} --permissions r --expiry ${expiryFormatted} -o tsv"
             def sasToken = bat(script: sasTokenCommand, returnStdout: true).trim()
             env.SAS_TOKEN = sasToken
         }
     }
 }
+
 
         //stage('Deploy to Azure VM') {
         //    steps {
