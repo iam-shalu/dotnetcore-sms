@@ -119,10 +119,12 @@ pipeline {
             // Construct PowerShell script with proper termination
             def powershellScript = """
                 \$storageUrl = "${blobUrl}"
-                \$destinationPath = "c:\\dotnetapp\\${APPLICATION_ZIP}"
+                \$destinationPath = "D:\\dotnetapp\\${APPLICATION_ZIP}"
+                Write-Output "Downloading file from \$storageUrl to \$destinationPath"
                 Invoke-WebRequest -Uri \$storageUrl -OutFile \$destinationPath
-                Expand-Archive -Path \$destinationPath -DestinationPath "c:\\dotnetapp"
-                # Add any other deployment commands here, e.g., starting services, configuring the application, etc.
+                Write-Output "Extracting files to D:\\dotnetapp"
+                Expand-Archive -Path \$destinationPath -DestinationPath "D:\\dotnetapp"
+                Write-Output "Deployment completed."
             """
 
             // Run PowerShell script on the VM
@@ -132,6 +134,7 @@ pipeline {
         }
     }
 }
+
 
     }
 
