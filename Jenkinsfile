@@ -99,36 +99,12 @@ pipeline {
 }
 
 
-
-
-        //stage('Deploy to Azure VM') {
-        //    steps {
-        //        script {
-                    // Construct URL with SAS token
-        //            def blobUrl = "https://${AZURE_STORAGE_ACCOUNT}.blob.core.windows.net/${AZURE_CONTAINER_NAME}/${APPLICATION_ZIP}?${env.SAS_TOKEN}"
-
-        //            // Use Azure CLI to run commands on the VM to download and deploy the application
-        //            bat """
-        //                az vm run-command invoke -g %AZURE_RESOURCE_GROUP% -n %AZURE_VM_NAME% --command-id RunPowerShellScript --scripts @'
-        //                \$storageUrl = "${blobUrl}"
-        //                \$destinationPath = "D:\\dotnetapp\\${APPLICATION_ZIP}"
-        //                Invoke-WebRequest -Uri \$storageUrl -OutFile \$destinationPath
-        //                Expand-Archive -Path \$destinationPath -DestinationPath "D:\\dotnetapp"
-        //                # Add any other deployment commands here, e.g., starting services, configuring the application, etc.
-        //                '@
-        //            """
-        //        }
-        //    }
-        //}
-
     stage('Deploy to Azure VM') {
     steps {
         script {
             // Construct URL with SAS token
             def blobUrl = "https://${AZURE_STORAGE_ACCOUNT}.blob.core.windows.net/${AZURE_CONTAINER_NAME}/${APPLICATION_ZIP}?${env.SAS_TOKEN}"
-            echo "Blob URL: ${blobUrl}"
-            echo "SAS: ${env.SAS_TOKEN}"
-            
+                        
             // Construct PowerShell script with proper escaping
             def powershellScript = """
                 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
