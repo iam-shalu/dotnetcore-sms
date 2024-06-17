@@ -116,16 +116,17 @@ pipeline {
             // Construct URL with SAS token
             def blobUrl = "https://${AZURE_STORAGE_ACCOUNT}.blob.core.windows.net/${AZURE_CONTAINER_NAME}/${APPLICATION_ZIP}?${env.SAS_TOKEN}"
             echo "Blob URL: ${blobUrl}"
+            echo "SAS: ${env.SAS_TOKEN}"
             
-            // Construct PowerShell script with proper termination
+            // Construct PowerShell script with proper escaping
             def powershellScript = """
                 \$storageUrl = "${blobUrl}"
                 \$destinationPath = "D:\\dotnetapp\\${APPLICATION_ZIP}"
-                Write-Output "Downloading file from \$storageUrl to \$destinationPath"
+                Write-Output \"Downloading file from \$storageUrl to \$destinationPath\"
                 Invoke-WebRequest -Uri \$storageUrl -OutFile \$destinationPath
-                Write-Output "Extracting files to D:\\dotnetapp"
-                Expand-Archive -Path \$destinationPath -DestinationPath "D:\\dotnetapp"
-                Write-Output "Deployment completed."
+                Write-Output \"Extracting files to D:\\dotnetapp\"
+                Expand-Archive -Path \$destinationPath -DestinationPath \"D:\\dotnetapp\"
+                Write-Output \"Deployment completed.\"
             """
 
             // Run PowerShell script on the VM
@@ -135,6 +136,7 @@ pipeline {
         }
     }
 }
+
 
 
     }
