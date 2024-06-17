@@ -7,12 +7,12 @@ pipeline {
         AZURE_CLIENT_ID = credentials('client-id')
         AZURE_CLIENT_SECRET = credentials('client-secret')
         AZURE_TENANT_ID = credentials('tenant-id')
-        AZURE_RESOURCE_GROUP = 'dotnetapp'
+        AZURE_RESOURCE_GROUP = 'rgdotnetapp'
         AZURE_VM_NAME = 'vmdotnetapp'
-        AZURE_VM_IP = '13.71.99.138'
+        AZURE_VM_IP = '52.172.102.158'
         AZURE_VM_USER = 'dotnetadmin'
         AZURE_VM_PASSWORD = credentials('vmpassword-id')  // Store the VM password in Jenkins credentials
-        AZURE_STORAGE_ACCOUNT = 'stdotnetapp'
+        AZURE_STORAGE_ACCOUNT = 'sadotnetapp'
         AZURE_STORAGE_KEY = credentials('storage-key-id')  // Store the storage key in Jenkins credentials
         AZURE_CONTAINER_NAME = 'condotnetapp'
         APPLICATION_ZIP = 'dotnetcore-sms.zip'
