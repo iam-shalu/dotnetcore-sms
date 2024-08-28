@@ -15,8 +15,10 @@ pipeline {
         stage('Build') {
             steps {
                 script {
+                    // Add the Microsoft.AspNet.Web.Optimization package
+                    bat "dotnet add Checkout\\webapp.csproj package Microsoft.AspNet.Web.Optimization"
+
                     // Restoring dependencies
-                    //bat "cd ${DOTNET_CLI_HOME} && dotnet restore"
                     bat "dotnet restore"
 
                     // Building the application
@@ -42,6 +44,7 @@ pipeline {
                 }
             }
         }
+
         stage('Deploy') {
             steps {
                 script {
@@ -51,10 +54,10 @@ pipeline {
                     $credentials = New-Object System.Management.Automation.PSCredential($env:CREDENTIAL_USERNAME, (ConvertTo-SecureString $env:CREDENTIAL_PASSWORD -AsPlainText -Force))
 
                     
-                    New-PSDrive -Name X -PSProvider FileSystem -Root "\\\\LAPTOP-DFRQ3ILG\\coreapp" -Persist -Credential $credentials
+                    New-PSDrive -Name X -PSProvider FileSystem -Root "\\\\SHALU\\checkout" -Persist -Credential $credentials
 
                     
-                    Copy-Item -Path '.\\publish\\*' -Destination 'X:\' -Force
+                    Copy-Item -Path '.\\publish\\*' -Destination 'X:\\' -Force
 
                     
                     Remove-PSDrive -Name X
