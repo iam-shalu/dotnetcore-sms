@@ -16,7 +16,6 @@ pipeline {
             steps {
                 script {
                     // Restoring dependencies
-                    //bat "cd ${DOTNET_CLI_HOME} && dotnet restore"
                     bat "dotnet restore"
 
                     // Building the application
@@ -42,24 +41,43 @@ pipeline {
                 }
             }
         }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    // Build Docker image from the Dockerfile
+                    bat "docker build -t my-dotnet-app ."
+                }
+            }
+        }
+
+        stage('Run Docker Container') {
+            steps {
+                script {
+                    // Running Docker container
+                    bat "docker run -d --name my-dotnet-container -p 8080:80 my-dotnet-app"
+                }
+            }
+        }
+
         stage('Deploy') {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'coreuser', passwordVariable: 'CREDENTIAL_PASSWORD', usernameVariable: 'CREDENTIAL_USERNAME')]) {
-                    powershell '''
-                    
-                    $credentials = New-Object System.Management.Automation.PSCredential($env:CREDENTIAL_USERNAME, (ConvertTo-SecureString $env:CREDENTIAL_PASSWORD -AsPlainText -Force))
+                        powershell '''
+                        
+                        $credentials = New-Object System.Management.Automation.PSCredential($env:CREDENTIAL_USERNAME, (ConvertTo-SecureString $env:CREDENTIAL_PASSWORD -AsPlainText -Force))
 
-                    
-                    New-PSDrive -Name X -PSProvider FileSystem -Root "\\\\LAPTOP-DFRQ3ILG\\coreapp" -Persist -Credential $credentials
+                        
+                        New-PSDrive -Name X -PSProvider FileSystem -Root "\\\\LAPTOP-DFRQ3ILG\\coreapp" -Persist -Credential $credentials
 
-                    
-                    Copy-Item -Path '.\\publish\\*' -Destination 'X:\' -Force
+                        
+                        Copy-Item -Path '.\\publish\\*' -Destination 'X:\\' -Force
 
-                    
-                    Remove-PSDrive -Name X
-                    '''
-                }
+                        
+                        Remove-PSDrive -Name X
+                        '''
+                    }
                 }
             }
         }
@@ -67,7 +85,7 @@ pipeline {
 
     post {
         success {
-            echo 'Build, test, and publish successful!'
+            echo 'Build, test, publish, and deployment successful!'
         }
     }
 }
